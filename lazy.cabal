@@ -52,4 +52,5 @@ library
   other-modules:
     Lazy.Prelude
   build-depends:
+    comonad >=5 && <6,
     base >=4.6 && <5

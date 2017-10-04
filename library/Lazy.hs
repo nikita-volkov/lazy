@@ -31,6 +31,12 @@ instance Monad Lazy where
       case rightK leftValue of
         Lazy rightIO -> rightIO
 
+instance Comonad Lazy where
+  extract = unlazy
+  extend leftK right =
+    lazy (leftK right)
+
+
 data LazyState value = UnevaluatedLazyState value | EvaluatedLazyState !value
 
 

@@ -32,6 +32,7 @@ import Control.Applicative as Exports
 import Control.Arrow as Exports hiding (first, second)
 import Control.Category as Exports
 import Control.Concurrent as Exports
+import Control.Comonad as Exports hiding (($>))
 import Control.Exception as Exports
 import Control.Monad as Exports hiding (mapM_, sequence_, forM_, msum, mapM, sequence, forM)
 import Control.Monad.Fix as Exports hiding (fix)
