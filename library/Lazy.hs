@@ -1,25 +1,29 @@
 module Lazy
+(
+  Lazy,
+  lazy,
+  unlazy,
+)
 where
 
 import Lazy.Prelude
 
 
-newtype Lazy a = Lazy (IORef (Either (() -> a) a))
+newtype Lazy value = Lazy (IORef (LazyState value))
 
-lazy :: (() -> a) -> Lazy a
-lazy f =
-  Lazy $ unsafePerformIO $ newIORef (Left f)
+data LazyState value = UnevaluatedLazyState value | EvaluatedLazyState !value
 
-unlazy :: Lazy a -> a
+lazy :: value -> Lazy value
+lazy value =
+  Lazy (unsafeDupablePerformIO (newIORef (UnevaluatedLazyState value)))
+
+unlazy :: Lazy value -> value
 unlazy (Lazy ref) =
   -- Synchronisation is not an issue here,
   -- since there's nothing dangerous in two threads
   -- occasionally computing the same result.
   -- That would be the price of not having 
   -- to pay for locks-maintenance overhead.
-  unsafePerformIO $ readIORef ref >>= \case
-    Left f -> do
-      let a = f ()
-      writeIORef ref (Right a)
-      return a
-    Right evaluated -> return evaluated
+  unsafeDupablePerformIO $ readIORef ref >>= \case
+    EvaluatedLazyState !value -> return value
+    UnevaluatedLazyState !value -> writeIORef ref (EvaluatedLazyState value) $> value
