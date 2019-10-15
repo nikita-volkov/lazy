@@ -40,7 +40,7 @@ instance Comonad Lazy where
 data LazyState value = UnevaluatedLazyState value | EvaluatedLazyState !value
 
 
-{-# INLINE lazy #-}
+{-# NOINLINE lazy #-}
 lazy :: value -> Lazy value
 lazy value =
   unsafeDupablePerformIO $ do
